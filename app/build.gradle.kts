@@ -10,8 +10,8 @@ android {
         applicationId = "com.ai10.messi"
         minSdk = 23
         targetSdk = 28
-        versionCode = 2
-        versionName = "2.0.0"
+        versionCode = 3
+        versionName = "3.0.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
