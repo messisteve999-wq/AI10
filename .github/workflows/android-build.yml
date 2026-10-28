@@ -1,34 +1,85 @@
 name: Build AI10 APK
+
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
+
 permissions:
   contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Java 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
+
       - name: Install Android packages
         run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
-      - name: Upload APK
+
+      - name: Verify APK
+        run: test -s app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload APK attempt 1
+        id: upload1
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: AI10-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload APK attempt 2
+        id: upload2
+        if: steps.upload1.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: AI10-debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload APK attempt 3
+        id: upload3
+        if: steps.upload1.outcome == 'failure' && steps.upload2.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: AI10-debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Check upload result
+        if: always()
+        env:
+          UPLOAD1: ${{ steps.upload1.outcome }}
+          UPLOAD2: ${{ steps.upload2.outcome }}
+          UPLOAD3: ${{ steps.upload3.outcome }}
+        run: |
+          if [ "$UPLOAD1" = "success" ] || [ "$UPLOAD2" = "success" ] || [ "$UPLOAD3" = "success" ]; then
+            echo "APK envoyé avec succès."
+          else
+            echo "Échec des trois tentatives d'envoi."
+            exit 1
+          fi
