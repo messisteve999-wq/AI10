@@ -30,6 +30,15 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Effacer les anciennes préférences une seule fois pour V6.
+        val migration = getSharedPreferences("ai10_migration", MODE_PRIVATE)
+        if (migration.getInt("data_version", 0) < 6) {
+            getSharedPreferences("ai10_settings", MODE_PRIVATE)
+                .edit().clear().commit()
+            migration.edit().putInt("data_version", 6).commit()
+        }
+
         window.statusBarColor = black
         window.navigationBarColor = black
 
@@ -50,7 +59,7 @@ class MainActivity : Activity() {
             setTextColor(gold)
         })
         body.addView(TextView(this).apply {
-            text = "AI10 v3"
+            text = "AI10 V6"
             textSize = 32f
             gravity = Gravity.CENTER
             typeface = Typeface.create("sans-serif-black", Typeface.BOLD)
@@ -149,7 +158,7 @@ class MainActivity : Activity() {
         }
 
         body.addView(TextView(this).apply {
-            text = "STEVE • AI10 v3"
+            text = "STEVE • AI10 V6"
             textSize = 12f
             gravity = Gravity.CENTER
             setTextColor(gold)

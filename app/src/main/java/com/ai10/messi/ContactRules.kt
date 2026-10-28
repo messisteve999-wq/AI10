@@ -7,7 +7,7 @@ object ContactRules {
     private const val ALLOWED = "allowed_contacts"
     private const val AUTO = "automatic_contacts"
     private const val SEP = "\u001f"
-    private const val LIMIT = 4
+    private const val LIMIT = 10
     private fun id(pkg: String, sender: String) = "$pkg$SEP$sender"
     private fun read(ctx: Context, key: String) =
         (ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getStringSet(key, emptySet()) ?: emptySet()).toMutableSet()

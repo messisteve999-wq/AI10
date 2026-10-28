@@ -9,9 +9,9 @@ android {
     defaultConfig {
         applicationId = "com.ai10.messi"
         minSdk = 23
-        targetSdk = 28
-        versionCode = 3
-        versionName = "3.0.0"
+        targetSdk = 35
+        versionCode = 6
+        versionName = "6.0.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
